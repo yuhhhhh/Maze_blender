@@ -15,6 +15,7 @@ import pandas as pd
 
 location = np.array([2, 0])
 end = np.array([6, 7])
+tFrame = 0
 
 maze = np.array(
             [
@@ -99,7 +100,7 @@ class Maze():
         time.sleep(0.1)
 
 class QLearningTable:
-    def __init__(self, actions, learning_rate = 0.01, reward_decay = 0.9, e_greedy = 0.9):
+    def __init__(self, actions, learning_rate = 0.5, reward_decay = 0.9, e_greedy = 0.9):
         self.actions = actions
         self.lr = learning_rate
         self.gamma = reward_decay
@@ -139,6 +140,11 @@ class QLearningTable:
             )
 
 def update():
+    global tFrame
+    obj = bpy.data.objects["Sphere"]
+    obj.keyframe_insert(data_path="location", frame=tFrame, index=0)
+    obj.keyframe_insert(data_path="location", frame=tFrame, index=1)
+    tFrame += 1
     for episode in range(100):
         observation = np.array([2, 0])
         env.reset()
@@ -152,9 +158,9 @@ def update():
             # 动作执行后，更新q值表
             RL.learn(str(observation), action, reward, str(observation_))
             if episode == 99:
-                print(observation)
-                print(action)
-                print(observation_)
+                obj.keyframe_insert(data_path = "location", frame = tFrame, index = 0)
+                obj.keyframe_insert(data_path = "location", frame = tFrame, index = 1)
+                tFrame += 1
             if done:
                 break
             else:
